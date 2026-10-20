@@ -22,3 +22,11 @@ Datos: narrativas públicas del CFPB (archivo del FOIA Reading Room). Caso de es
 - El split es temporal (split.val_start en params.yaml), nunca aleatorio.
 - golden_test nunca se usa para entrenar.
 - Ordenar por complaint_id antes de muestrear y usar la semilla de params.yaml.
+
+## Datos y DVC (sesión 2)
+- Los datos nunca se versionan en Git. `data/raw`, `data/golden` y `data/processed` los maneja DVC.
+- Al cambiar datos: `dvc add <ruta>`, luego `git add <ruta>.dvc`, `git commit`, y **`dvc push` junto con `git push`**.
+- Un archivo `.dvc` cuyo contenido no está en el remoto no se puede reproducir: nunca hacer uno sin el otro.
+- Al cambiar de rama o etiqueta: `dvc checkout` después de `git checkout`.
+- Remoto DVC: `../dvc-storage/triage-reclamos` (definido en `.dvc/config`).
+- Las versiones de datos se marcan con etiquetas: `data-v1`, `data-v2`, `data-v3`.

@@ -1,0 +1,12 @@
+# Mecanismo 3 de la sesión 2: rechaza en el commit lo que no debe entrar al
+# repositorio, tanto si lo intenta una persona como un agente.
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-added-large-files   # ningún archivo de datos entra a Git
+        args: ["--maxkb=1000"]
+      - id: check-merge-conflict      # ninguna marca <<<<<<< queda en el código
+      - id: check-yaml                # params.yaml y label_map.yaml válidos
+      - id: end-of-file-fixer
+      - id: trailing-whitespace

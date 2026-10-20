@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(make test:*)",
+      "Bash(make data:*)",
+      "Bash(make train:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(dvc status:*)",
+      "Bash(dvc add:*)",
+      "Bash(dvc push:*)",
+      "Bash(dvc pull:*)"
+    ],
+    "ask": [
+      "Bash(git push:*)",
+      "Bash(gh pr create:*)",
+      "Bash(git merge:*)"
+    ],
+    "deny": [
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git add data/raw:*)",
+      "Bash(git add data/golden:*)",
+      "Bash(git add data/processed:*)"
+    ]
+  }
+}

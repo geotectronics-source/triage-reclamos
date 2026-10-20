@@ -69,9 +69,22 @@ def leer_crudos(raw_dir: str) -> pd.DataFrame:
     return renombrar(pd.concat(partes, ignore_index=True))
 
 
+def leer_landing(landing_dir: str) -> pd.DataFrame:
+    """Lee las llegadas diarias, particionadas como fecha=YYYY-MM-DD/part.parquet."""
+    archivos = sorted(Path(landing_dir).glob("fecha=*/*.parquet"))
+    if not archivos:
+        return renombrar(pd.DataFrame(columns=list(COLUMNAS)))
+    partes = [pd.read_parquet(a, columns=list(COLUMNAS)) for a in archivos]
+    return renombrar(pd.concat(partes, ignore_index=True))
+
+
 def construir(params: dict) -> tuple[pd.DataFrame, pd.DataFrame]:
     label_map = cargar_yaml(params["data"]["label_map"])
-    df = limpiar(leer_crudos(params["data"]["raw_dir"]))
+    crudos = leer_crudos(params["data"]["raw_dir"])
+    landing_dir = params["data"].get("landing_dir")
+    if landing_dir and Path(landing_dir).exists():
+        crudos = pd.concat([crudos, leer_landing(landing_dir)], ignore_index=True)
+    df = limpiar(crudos)
     df["clase"] = asignar_clase(df, label_map)
 
     corte = pd.Timestamp(params["split"]["val_start"])

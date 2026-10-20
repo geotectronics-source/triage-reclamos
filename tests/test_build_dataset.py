@@ -1,6 +1,6 @@
 import pandas as pd
 
-from triage.data.build_dataset import asignar_clase, leer_landing, limpiar, muestrear
+from triage.data.build_dataset import asignar_clase, cargar_yaml, leer_landing, limpiar, muestrear
 
 LABEL_MAP = {
     "clases": {"tarjetas": ["Credit card"], "cobranza": ["Debt collection"]},
@@ -65,3 +65,16 @@ def test_leer_landing_sin_particiones_devuelve_vacio(tmp_path):
     df = leer_landing(str(tmp_path))
     assert len(df) == 0
     assert list(df.columns) == ["complaint_id", "fecha", "producto", "subproducto", "texto"]
+
+
+def test_label_map_separa_las_tarjetas_prepago():
+    """El mapa real del proyecto define 9 clases y aisla el prepago (data-v3)."""
+    label_map = cargar_yaml("configs/label_map.yaml")
+    assert len(label_map["clases"]) == 9
+    assert "tarjetas_prepago" in label_map["clases"]
+
+    df = pd.DataFrame({
+        "producto": ["Credit card or prepaid card", "Credit card or prepaid card", "Prepaid card"],
+        "subproducto": ["General-purpose prepaid card", "Store credit card", None],
+    })
+    assert list(asignar_clase(df, label_map)) == ["tarjetas_prepago", "tarjetas", "tarjetas_prepago"]

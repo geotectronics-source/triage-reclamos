@@ -1,6 +1,6 @@
 import pandas as pd
 
-from triage.data.build_dataset import asignar_clase, limpiar, muestrear
+from triage.data.build_dataset import asignar_clase, leer_landing, limpiar, muestrear
 
 LABEL_MAP = {
     "clases": {"tarjetas": ["Credit card"], "cobranza": ["Debt collection"]},
@@ -45,3 +45,23 @@ def test_muestrear_respeta_tope_y_es_determinista():
     m2 = muestrear(df, max_por_clase=10, seed=42)
     assert m1["clase"].value_counts().max() == 10
     assert m1.equals(m2)
+
+
+def test_leer_landing_lee_las_particiones_por_fecha(tmp_path):
+    for fecha, cid in (("2024-01-02", "11"), ("2024-01-01", "10")):
+        destino = tmp_path / f"fecha={fecha}"
+        destino.mkdir()
+        pd.DataFrame({
+            "Complaint ID": [cid], "Date received": [fecha],
+            "Product": ["Credit card"], "Sub-product": [None],
+            "Consumer complaint narrative": ["texto del reclamo"],
+        }).to_parquet(destino / "part.parquet", index=False)
+    df = leer_landing(str(tmp_path))
+    assert list(df["complaint_id"]) == ["10", "11"]  # ordenado por particion
+    assert list(df.columns) == ["complaint_id", "fecha", "producto", "subproducto", "texto"]
+
+
+def test_leer_landing_sin_particiones_devuelve_vacio(tmp_path):
+    df = leer_landing(str(tmp_path))
+    assert len(df) == 0
+    assert list(df.columns) == ["complaint_id", "fecha", "producto", "subproducto", "texto"]

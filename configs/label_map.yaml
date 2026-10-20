@@ -14,6 +14,7 @@ clases:
   tarjetas:
     - Credit card or prepaid card
     - Credit card
+  tarjetas_prepago:
     - Prepaid card
   hipotecas:
     - Mortgage
@@ -31,4 +32,9 @@ clase_por_defecto: otros
 
 # Reglas por subproducto (columna Sub-product). Tienen prioridad sobre "clases".
 # Sub-product solo se usa aquí, para construir la etiqueta; nunca como feature del modelo.
-por_subproducto: {}
+por_subproducto:
+  General-purpose prepaid card: tarjetas_prepago
+  Government benefit card: tarjetas_prepago
+  Gift card: tarjetas_prepago
+  Payroll card: tarjetas_prepago
+  Student prepaid card: tarjetas_prepago
